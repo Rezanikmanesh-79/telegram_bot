@@ -1,0 +1,18 @@
+# نصب پکیج‌ها بدون تنظیم
+global pip install -i https://mirror-pypi.runflare.com/simple django
+
+# تنظیم Mirror به صورت
+Global pip config --user set global.index https://mirror-pypi.runflare.com/simple
+pip config --user set global.index-url https://mirror-pypi.runflare.com/simple
+pip config --user set global.trusted-host repo.hmirror.ir
+
+# حالا می‌توانید پکیج‌ها را مثل همیشه نصب کنید
+pip install packageName
+
+
+
+لینک mirror ها:
+
+https://runflare.com/mirrors/
+
+https://mirror.kubarcloud.com/
