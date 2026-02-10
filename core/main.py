@@ -107,10 +107,56 @@
 #  message handler my practice
 
 
+# from telebot import TeleBot,apihelper
+# from decouple import config
+# import json
+# import pprint
+
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+# TOKEN = config("BOT_TOKEN")
+
+# bot = TeleBot(TOKEN)
+
+
+# # Handles all text messages that contains the commands '/start' or '/help'.
+# @bot.message_handler(commands=['start', 'help'])
+# def handle_start_help(message):
+# 	bot.reply_to(message,"welcome to my tele bot")
+	
+# # Handles all sent documents and audio files
+# @bot.message_handler(content_types=['document', 'audio'])
+# def handle_docs_audio(message):
+# 	bot.reply_to(message,"hmmm this is audio or documents")
+
+
+# # Handles all text messages that match the regular expression
+# @bot.message_handler(regexp="reza")
+# def handle_message(message):
+# 	bot.reply_to(message,"this is sample regex we have reza on message")
+
+# # Handles all messages for which the lambda returns True
+# @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain', content_types=['document'])
+# def handle_text_doc(message):
+# 	bot.reply_to(message, "even lambda work to ")
+
+
+# bot.infinity_polling()
+
+#---------------------------------------------------------------------
+
+
 from telebot import TeleBot,apihelper
 from decouple import config
-import json
-import pprint
+
+
+#for example it can check it's admin or it's valid file format
+#for using middleware we should firs enable it from apihelper
+#it work like this message -------> middleware ---------> handler
+apihelper.ENABLE_MIDDLEWARE = True
 
 
 apihelper.proxy = {
@@ -122,26 +168,17 @@ TOKEN = config("BOT_TOKEN")
 bot = TeleBot(TOKEN)
 
 
-# Handles all text messages that contains the commands '/start' or '/help'.
-@bot.message_handler(commands=['start', 'help'])
-def handle_start_help(message):
-	bot.reply_to(message,"welcome to my tele bot")
-	
-# Handles all sent documents and audio files
-@bot.message_handler(content_types=['document', 'audio'])
-def handle_docs_audio(message):
-	bot.reply_to(message,"hmmm this is audio or documents")
+# Handle '/start' and '/help'
+@bot.message_handler(commands=['help', 'start'])
+def send_welcome (message):
+    bot.reply_to(message, """Hi this is a sample for learning telegram bot in python""")
 
+@bot.middleware_handler(update_types=['message'])
+def modify_message(bot_instance, message):
+    # modifying the message before it reaches any other handler 
+    message.another_text = message.text+ ':changed'
 
-# Handles all text messages that match the regular expression
-@bot.message_handler(regexp="reza")
-def handle_message(message):
-	bot.reply_to(message,"this is sample regex we have reza on message")
-
-# Handles all messages for which the lambda returns True
-@bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain', content_types=['document'])
-def handle_text_doc(message):
-	bot.reply_to(message, "even lambda work to ")
-
-
+@bot.message_handler(func= lambda message : True)
+def replay_modified(message):
+    bot.reply_to(message,message.another_text)
 bot.infinity_polling()
