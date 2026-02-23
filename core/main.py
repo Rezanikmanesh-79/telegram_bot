@@ -183,7 +183,48 @@
 #     bot.reply_to(message,message.another_text)
 # bot.infinity_polling()
 
-#-----------------logger---------------------------------
+# #-----------------logger---------------------------------
+# from telebot import TeleBot,apihelper
+# from decouple import config
+# import logging
+# import telebot 
+# #we use it cuz it's multi tread
+# logger = telebot.logger
+# #you can set level warning by this  setLevel(logging.TARGET)
+# # search log level in google
+# telebot.logger.setLevel(logging.INFO)
+# #for example it can check it's admin or it's valid file format
+# #for using middleware we should firs enable it from apihelper
+# #it work like this message -------> middleware ---------> handler
+# apihelper.ENABLE_MIDDLEWARE = True
+
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+# TOKEN = config("BOT_TOKEN")
+
+# bot = TeleBot(TOKEN)
+
+
+# # Handle '/start' and '/help'
+# @bot.message_handler(commands=['help', 'start'])
+# def send_welcome (message):
+#     bot.reply_to(message, """Hi this is a sample for learning telegram bot in python""")
+
+# @bot.middleware_handler(update_types=['message'])
+# def modify_message(bot_instance, message):
+#     # modifying the message before it reaches any other handler 
+#     message.another_text = message.text+ ':changed'
+
+# @bot.message_handler(func= lambda message : True)
+# def replay_modified(message):
+#     logger.info("################# message_handler trigger ############")
+#     bot.reply_to(message,message.another_text)
+# bot.infinity_polling()
+# #---------------------------------------------------------------------------------------
+#-----------------form---------------------------------
 from telebot import TeleBot,apihelper
 from decouple import config
 import logging
@@ -193,11 +234,6 @@ logger = telebot.logger
 #you can set level warning by this  setLevel(logging.TARGET)
 # search log level in google
 telebot.logger.setLevel(logging.INFO)
-#for example it can check it's admin or it's valid file format
-#for using middleware we should firs enable it from apihelper
-#it work like this message -------> middleware ---------> handler
-apihelper.ENABLE_MIDDLEWARE = True
-
 
 apihelper.proxy = {
     'https': 'http://192.168.100.3:8080'
@@ -213,13 +249,21 @@ bot = TeleBot(TOKEN)
 def send_welcome (message):
     bot.reply_to(message, """Hi this is a sample for learning telegram bot in python""")
 
-@bot.middleware_handler(update_types=['message'])
-def modify_message(bot_instance, message):
-    # modifying the message before it reaches any other handler 
-    message.another_text = message.text+ ':changed'
+@bot.message_handler(commands=['setname'])
+def setup_name(message):
+    logger.info("################# setup_name trigger ############")
+    bot.send_message(message.chat.id,"what's your name ?")
+    #we pass user name buy this and sequence of orders :
+    #whit this callback= FUNC we pass our arg to the next finc
+    bot.register_next_step_handler(message,assign_first_name)
+def assign_first_name(message,*args, **kwargs):
+    logger.info("___________________ assign_name trigger _____________________")
+    first_name=message.text
+    bot.send_message(message.chat.id,"what's your last name ?")
+    bot.register_next_step_handler(message,assign_last_name,first_name)
+def assign_last_name(message,first_name):
+    last_name=message.text
+    bot.send_message(message.chat.id,f"welcome {first_name} {last_name} to my bot")
 
-@bot.message_handler(func= lambda message : True)
-def replay_modified(message):
-    logger.info("################# message_handler trigger ############")
-    bot.reply_to(message,message.another_text)
 bot.infinity_polling()
+#---------------------------------------------------------------------------------------
