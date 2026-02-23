@@ -149,10 +149,50 @@
 #---------------------------------------------------------------------
 
 
+# from telebot import TeleBot,apihelper
+# from decouple import config
+
+
+# #for example it can check it's admin or it's valid file format
+# #for using middleware we should firs enable it from apihelper
+# #it work like this message -------> middleware ---------> handler
+# apihelper.ENABLE_MIDDLEWARE = True
+
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+# TOKEN = config("BOT_TOKEN")
+
+# bot = TeleBot(TOKEN)
+
+
+# # Handle '/start' and '/help'
+# @bot.message_handler(commands=['help', 'start'])
+# def send_welcome (message):
+#     bot.reply_to(message, """Hi this is a sample for learning telegram bot in python""")
+
+# @bot.middleware_handler(update_types=['message'])
+# def modify_message(bot_instance, message):
+#     # modifying the message before it reaches any other handler 
+#     message.another_text = message.text+ ':changed'
+
+# @bot.message_handler(func= lambda message : True)
+# def replay_modified(message):
+#     bot.reply_to(message,message.another_text)
+# bot.infinity_polling()
+
+#-----------------logger---------------------------------
 from telebot import TeleBot,apihelper
 from decouple import config
-
-
+import logging
+import telebot 
+#we use it cuz it's multi tread
+logger = telebot.logger
+#you can set level warning by this  setLevel(logging.TARGET)
+# search log level in google
+telebot.logger.setLevel(logging.INFO)
 #for example it can check it's admin or it's valid file format
 #for using middleware we should firs enable it from apihelper
 #it work like this message -------> middleware ---------> handler
@@ -180,5 +220,6 @@ def modify_message(bot_instance, message):
 
 @bot.message_handler(func= lambda message : True)
 def replay_modified(message):
+    logger.info("################# message_handler trigger ############")
     bot.reply_to(message,message.another_text)
 bot.infinity_polling()
