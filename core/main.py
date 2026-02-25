@@ -225,45 +225,114 @@
 # bot.infinity_polling()
 # #---------------------------------------------------------------------------------------
 #-----------------form---------------------------------
-from telebot import TeleBot,apihelper
+# from telebot import TeleBot,apihelper
+# from decouple import config
+# import logging
+# import telebot 
+# #we use it cuz it's multi tread
+# logger = telebot.logger
+# #you can set level warning by this  setLevel(logging.TARGET)
+# # search log level in google
+# telebot.logger.setLevel(logging.INFO)
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+# TOKEN = config("BOT_TOKEN")
+
+# bot = TeleBot(TOKEN)
+
+
+# # Handle '/start' and '/help'
+# @bot.message_handler(commands=['help', 'start'])
+# def send_welcome (message):
+#     bot.reply_to(message, """Hi this is a sample for learning telegram bot in python""")
+
+# @bot.message_handler(commands=['setname'])
+# def setup_name(message):
+#     logger.info("################# setup_name trigger ############")
+#     bot.send_message(message.chat.id,"what's your name ?")
+#     #we pass user name buy this and sequence of orders :
+#     #whit this callback= FUNC we pass our arg to the next finc
+#     bot.register_next_step_handler(message,assign_first_name)
+# def assign_first_name(message,*args, **kwargs):
+#     logger.info("___________________ assign_name trigger _____________________")
+#     first_name=message.text
+#     bot.send_message(message.chat.id,"what's your last name ?")
+#     bot.register_next_step_handler(message,assign_last_name,first_name)
+# def assign_last_name(message,first_name):
+#     last_name=message.text
+#     bot.send_message(message.chat.id,f"welcome {first_name} {last_name} to my bot")
+
+# bot.infinity_polling()
+#---------------------------------------------------------------------------------------
+#https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.register_business_connection_handler
+#-----------------------Keyboard Button------------------------------------------------
+# import telebot
+# from telebot import types
+# from decouple import config
+# from telebot import apihelper
+
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+
+# API_TOKEN = config("BOT_TOKEN")
+# bot = telebot.TeleBot(API_TOKEN)
+
+# # ایجاد یک کیبورد پاسخ با دو گزینه: "دستور اول" و "دستور دوم"
+# keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+# button1 = types.KeyboardButton("دستور اول")
+# button2 = types.KeyboardButton("دستور دوم")
+# keyboard.add(button1, button2)
+
+# @bot.message_handler(commands=['start'])
+# def send_welcome(message):
+#     bot.reply_to(message, "سلام! یکی از دستورات زیر را انتخاب کنید:", reply_markup=keyboard)
+
+# @bot.message_handler(func=lambda message: True)
+# def echo_all(message):
+#     bot.reply_to(message, message.text, reply_markup=keyboard)
+
+# bot.infinity_polling()
+
+
+
+import telebot
+from telebot import types
 from decouple import config
+from telebot import apihelper
 import logging
-import telebot 
-#we use it cuz it's multi tread
-logger = telebot.logger
-#you can set level warning by this  setLevel(logging.TARGET)
-# search log level in google
+# we use those for display buten
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+loger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
 apihelper.proxy = {
     'https': 'http://192.168.100.3:8080'
 }
 
-TOKEN = config("BOT_TOKEN")
 
-bot = TeleBot(TOKEN)
+API_TOKEN = config("BOT_TOKEN")
+bot = telebot.TeleBot(API_TOKEN)
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    loger.info("################# send_welcome trigger ############")
+    markup=ReplyKeyboardMarkup(resize_keyboard=True,input_field_placeholder="select your command")
+    markup.add(KeyboardButton("help"),KeyboardButton("about"))
+    bot.reply_to(message, "سلام! یکی از دستورات زیر را انتخاب کنید:", reply_markup=markup)
+    
+@bot.message_handler(func=lambda message:message.text=="help")
+def send_help(message):
+    loger.info("################# send_help trigger ############")
+    bot.reply_to(message,"this is a sample for learning telegram bot in python")
 
-
-# Handle '/start' and '/help'
-@bot.message_handler(commands=['help', 'start'])
-def send_welcome (message):
-    bot.reply_to(message, """Hi this is a sample for learning telegram bot in python""")
-
-@bot.message_handler(commands=['setname'])
-def setup_name(message):
-    logger.info("################# setup_name trigger ############")
-    bot.send_message(message.chat.id,"what's your name ?")
-    #we pass user name buy this and sequence of orders :
-    #whit this callback= FUNC we pass our arg to the next finc
-    bot.register_next_step_handler(message,assign_first_name)
-def assign_first_name(message,*args, **kwargs):
-    logger.info("___________________ assign_name trigger _____________________")
-    first_name=message.text
-    bot.send_message(message.chat.id,"what's your last name ?")
-    bot.register_next_step_handler(message,assign_last_name,first_name)
-def assign_last_name(message,first_name):
-    last_name=message.text
-    bot.send_message(message.chat.id,f"welcome {first_name} {last_name} to my bot")
+@bot.message_handler(func=lambda message:message.text=="about")
+def send_about(message):
+    loger.info("################# send_about trigger ############")
+    bot.reply_to(message,"this bot is created by reza")
 
 bot.infinity_polling()
-#---------------------------------------------------------------------------------------
