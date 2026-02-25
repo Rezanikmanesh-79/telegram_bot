@@ -301,13 +301,53 @@
 
 
 
+# import telebot
+# from telebot import types
+# from decouple import config
+# from telebot import apihelper
+# import logging
+# # we use those for display buten
+# from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+# loger = telebot.logger
+# telebot.logger.setLevel(logging.INFO)
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+
+# API_TOKEN = config("BOT_TOKEN")
+# bot = telebot.TeleBot(API_TOKEN)
+# @bot.message_handler(commands=['start'])
+# def send_welcome(message):
+#     loger.info("################# send_welcome trigger ############")
+#     markup=ReplyKeyboardMarkup(resize_keyboard=True,input_field_placeholder="select your command")
+#     markup.add(KeyboardButton("help"),KeyboardButton("about"))
+#     bot.reply_to(message, "سلام! یکی از دستورات زیر را انتخاب کنید:", reply_markup=markup)
+    
+# @bot.message_handler(func=lambda message:message.text=="help")
+# def send_help(message):
+#     loger.info("################# send_help trigger ############")
+#     bot.reply_to(message,"this is a sample for learning telegram bot in python")
+
+# @bot.message_handler(func=lambda message:message.text=="about")
+# def send_about(message):
+#     loger.info("################# send_about trigger ############")
+#     bot.reply_to(message,"this bot is created by reza")
+
+# bot.infinity_polling()
+
+
+
+#------------------inline keyboard button----------------------
+
 import telebot
 from telebot import types
 from decouple import config
 from telebot import apihelper
 import logging
 # we use those for display buten
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+from telebot.types import InlineKeyboardMarkup,InlineKeyboardButton
 loger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
@@ -321,18 +361,17 @@ bot = telebot.TeleBot(API_TOKEN)
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     loger.info("################# send_welcome trigger ############")
-    markup=ReplyKeyboardMarkup(resize_keyboard=True,input_field_placeholder="select your command")
-    markup.add(KeyboardButton("help"),KeyboardButton("about"))
-    bot.reply_to(message, "سلام! یکی از دستورات زیر را انتخاب کنید:", reply_markup=markup)
-    
-@bot.message_handler(func=lambda message:message.text=="help")
-def send_help(message):
-    loger.info("################# send_help trigger ############")
-    bot.reply_to(message,"this is a sample for learning telegram bot in python")
-
-@bot.message_handler(func=lambda message:message.text=="about")
-def send_about(message):
-    loger.info("################# send_about trigger ############")
-    bot.reply_to(message,"this bot is created by reza")
-
+    markup=InlineKeyboardMarkup()
+    buten_google=InlineKeyboardButton("google",url="https://www.google.com")
+    markup.add(buten_google)
+    buten_test=InlineKeyboardButton("test",callback_data="test")
+    markup.add(buten_test)
+    bot.send_message(message.chat.id, "سلام! این یک نمونه برای یادگیری دکمه‌های اینلاین است.", reply_markup=markup)
+# for handling callback_data data we should use callback_query_handler 
+@bot.callback_query_handler(func=lambda call: call.data == "test")
+def handle_test_callback(call):
+    loger.info("################# handle_test_callback trigger ############")
+    bot.answer_callback_query(call.id, text="test button clicked!")
+    if call.data=="test":
+        bot.answer_callback_query(call.message.chat.id,"you click test button",show_alert=True)
 bot.infinity_polling()
