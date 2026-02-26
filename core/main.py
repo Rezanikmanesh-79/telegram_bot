@@ -341,6 +341,43 @@
 
 #------------------inline keyboard button----------------------
 
+# import telebot
+# from telebot import types
+# from decouple import config
+# from telebot import apihelper
+# import logging
+# # we use those for display buten
+# from telebot.types import InlineKeyboardMarkup,InlineKeyboardButton
+# loger = telebot.logger
+# telebot.logger.setLevel(logging.INFO)
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+
+# API_TOKEN = config("BOT_TOKEN")
+# bot = telebot.TeleBot(API_TOKEN)
+# @bot.message_handler(commands=['start'])
+# def send_welcome(message):
+#     loger.info("################# send_welcome trigger ############")
+#     markup=InlineKeyboardMarkup()
+#     buten_google=InlineKeyboardButton("google",url="https://www.google.com")
+#     markup.add(buten_google)
+#     buten_test=InlineKeyboardButton("test",callback_data="test")
+#     markup.add(buten_test)
+#     bot.send_message(message.chat.id, "سلام! این یک نمونه برای یادگیری دکمه‌های اینلاین است.", reply_markup=markup)
+# # for handling callback_data data we should use callback_query_handler 
+# @bot.callback_query_handler(func=lambda call: call.data == "test")
+# def handle_test_callback(call):
+#     loger.info("################# handle_test_callback trigger ############")
+#     bot.answer_callback_query(call.id, text="test button clicked!")
+#     if call.data=="test":
+#         bot.answer_callback_query(call.message.chat.id,"you click test button",show_alert=True)
+# bot.infinity_polling()
+
+#---------------sequence with inline kebord---------------
+
 import telebot
 from telebot import types
 from decouple import config
@@ -361,17 +398,45 @@ bot = telebot.TeleBot(API_TOKEN)
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     loger.info("################# send_welcome trigger ############")
+    # we use markup for display buten and we can add some buten to it and pass it to send_message by reply_markup
     markup=InlineKeyboardMarkup()
     buten_google=InlineKeyboardButton("google",url="https://www.google.com")
     markup.add(buten_google)
-    buten_test=InlineKeyboardButton("test",callback_data="test")
-    markup.add(buten_test)
+    step1=InlineKeyboardButton("test",callback_data="step1")
+    markup.add(step1)
     bot.send_message(message.chat.id, "سلام! این یک نمونه برای یادگیری دکمه‌های اینلاین است.", reply_markup=markup)
 # for handling callback_data data we should use callback_query_handler 
-@bot.callback_query_handler(func=lambda call: call.data == "test")
+@bot.callback_query_handler(func=lambda call: True)
 def handle_test_callback(call):
     loger.info("################# handle_test_callback trigger ############")
-    bot.answer_callback_query(call.id, text="test button clicked!")
-    if call.data=="test":
-        bot.answer_callback_query(call.message.chat.id,"you click test button",show_alert=True)
+
+    # جلوگیری از not answered error
+    bot.answer_callback_query(call.id)
+
+    # ---- step1 ----
+    if call.data=="step1":
+        markup=InlineKeyboardMarkup()
+        step2=InlineKeyboardButton("step2",callback_data="step2")
+        buten_cancel=InlineKeyboardButton("buten_cancel",callback_data="buten_cancel")
+        markup.add(step2)
+        markup.add(buten_cancel)
+
+        bot.edit_message_text(
+            chat_id=call.message.chat.id,
+            message_id=call.message.id,
+            text="you clicked step1 button",
+            reply_markup=markup
+        )
+
+    # ---- step2 ----
+    elif call.data=="step2":
+        loger.info("################# step2 trigger ############")
+        bot.send_message(call.message.chat.id,"you click step2 button")
+
+    # ---- cancel ----
+    elif call.data=="buten_cancel":
+        loger.info("################# buten_cancel trigger ############")
+        bot.answer_callback_query(call.id, "process canceled", show_alert=True)
+        bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id,timeout=5)
+
 bot.infinity_polling()
