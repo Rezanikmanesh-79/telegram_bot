@@ -378,6 +378,73 @@
 
 #---------------sequence with inline kebord---------------
 
+# import telebot
+# from telebot import types
+# from decouple import config
+# from telebot import apihelper
+# import logging
+# # we use those for display buten
+# from telebot.types import InlineKeyboardMarkup,InlineKeyboardButton
+# loger = telebot.logger
+# telebot.logger.setLevel(logging.INFO)
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+
+# API_TOKEN = config("BOT_TOKEN")
+# bot = telebot.TeleBot(API_TOKEN)
+# @bot.message_handler(commands=['start'])
+# def send_welcome(message):
+#     loger.info("################# send_welcome trigger ############")
+#     # we use markup for display buten and we can add some buten to it and pass it to send_message by reply_markup
+#     markup=InlineKeyboardMarkup()
+#     buten_google=InlineKeyboardButton("google",url="https://www.google.com")
+#     markup.add(buten_google)
+#     step1=InlineKeyboardButton("test",callback_data="step1")
+#     markup.add(step1)
+#     bot.send_message(message.chat.id, "سلام! این یک نمونه برای یادگیری دکمه‌های اینلاین است.", reply_markup=markup)
+# # for handling callback_data data we should use callback_query_handler 
+# @bot.callback_query_handler(func=lambda call: True)
+# def handle_test_callback(call):
+#     loger.info("################# handle_test_callback trigger ############")
+
+#     # جلوگیری از not answered error
+#     bot.answer_callback_query(call.id)
+
+#     # ---- step1 ----
+#     if call.data=="step1":
+#         markup=InlineKeyboardMarkup()
+#         step2=InlineKeyboardButton("step2",callback_data="step2")
+#         buten_cancel=InlineKeyboardButton("buten_cancel",callback_data="buten_cancel")
+#         markup.add(step2)
+#         markup.add(buten_cancel)
+
+#         bot.edit_message_text(
+#             chat_id=call.message.chat.id,
+#             message_id=call.message.id,
+#             text="you clicked step1 button",
+#             reply_markup=markup
+#         )
+
+#     # ---- step2 ----
+#     elif call.data=="step2":
+#         loger.info("################# step2 trigger ############")
+#         bot.send_message(call.message.chat.id,"you click step2 button")
+
+#     # ---- cancel ----
+#     elif call.data=="buten_cancel":
+#         loger.info("################# buten_cancel trigger ############")
+#         bot.answer_callback_query(call.id, "process canceled", show_alert=True)
+#         bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id,timeout=5)
+
+# bot.infinity_polling()
+
+#------------------end----------------------
+
+#-------------------sending file------------
+
 import telebot
 from telebot import types
 from decouple import config
@@ -398,45 +465,33 @@ bot = telebot.TeleBot(API_TOKEN)
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     loger.info("################# send_welcome trigger ############")
-    # we use markup for display buten and we can add some buten to it and pass it to send_message by reply_markup
-    markup=InlineKeyboardMarkup()
-    buten_google=InlineKeyboardButton("google",url="https://www.google.com")
-    markup.add(buten_google)
-    step1=InlineKeyboardButton("test",callback_data="step1")
-    markup.add(step1)
-    bot.send_message(message.chat.id, "سلام! این یک نمونه برای یادگیری دکمه‌های اینلاین است.", reply_markup=markup)
-# for handling callback_data data we should use callback_query_handler 
-@bot.callback_query_handler(func=lambda call: True)
-def handle_test_callback(call):
-    loger.info("################# handle_test_callback trigger ############")
+    bot.send_message(message.chat.id, "سلام! این یک نمونه برای یادگیری ارسال فایل است.")
 
-    # جلوگیری از not answered error
-    bot.answer_callback_query(call.id)
+@bot.message_handler(commands=['test_voice'])
+def send_voice(message):
+    loger.info("################# send_voice trigger ############")
+    voice_file=open("./test/files/test.mp3","rb")
+    bot.send_chat_action(message.chat.id,"upload_voice")
+    bot.send_voice(message.chat.id,voice_file)
 
-    # ---- step1 ----
-    if call.data=="step1":
-        markup=InlineKeyboardMarkup()
-        step2=InlineKeyboardButton("step2",callback_data="step2")
-        buten_cancel=InlineKeyboardButton("buten_cancel",callback_data="buten_cancel")
-        markup.add(step2)
-        markup.add(buten_cancel)
+@bot.message_handler(commands=['test_video'])
+def send_video(message):
+    loger.info("################# send_video trigger ############")
+    video_file=open("./test/files/test.mp4","rb")
+    bot.send_chat_action(message.chat.id,"upload_video")
+    bot.send_video(message.chat.id,video_file,timeout=20)
 
-        bot.edit_message_text(
-            chat_id=call.message.chat.id,
-            message_id=call.message.id,
-            text="you clicked step1 button",
-            reply_markup=markup
-        )
+@bot.message_handler(commands=['test_document'])
+def send_document(message):
+    loger.info("################# send_document trigger ############")
+    document_file=open("./test/files/test.pdf","rb")
+    bot.send_chat_action(message.chat.id,"upload_document")
+    bot.send_document(message.chat.id,document_file)
 
-    # ---- step2 ----
-    elif call.data=="step2":
-        loger.info("################# step2 trigger ############")
-        bot.send_message(call.message.chat.id,"you click step2 button")
-
-    # ---- cancel ----
-    elif call.data=="buten_cancel":
-        loger.info("################# buten_cancel trigger ############")
-        bot.answer_callback_query(call.id, "process canceled", show_alert=True)
-        bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id,timeout=5)
-
+@bot.message_handler(commands=['test_photo'])
+def send_photo(message):
+    loger.info("################# send_photo trigger ############")
+    photo_file=open("./test/files/test.png","rb")
+    bot.send_chat_action(message.chat.id,"upload_photo")
+    bot.send_photo(message.chat.id,photo_file)
 bot.infinity_polling()
