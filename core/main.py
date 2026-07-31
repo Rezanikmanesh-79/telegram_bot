@@ -445,6 +445,59 @@
 
 #-------------------sending file------------
 
+# import telebot
+# from telebot import types
+# from decouple import config
+# from telebot import apihelper
+# import logging
+# # we use those for display buten
+# from telebot.types import InlineKeyboardMarkup,InlineKeyboardButton
+# loger = telebot.logger
+# telebot.logger.setLevel(logging.INFO)
+
+# apihelper.proxy = {
+#     'https': 'http://192.168.100.3:8080'
+# }
+
+
+# API_TOKEN = config("BOT_TOKEN")
+# bot = telebot.TeleBot(API_TOKEN)
+# @bot.message_handler(commands=['start'])
+# def send_welcome(message):
+#     loger.info("################# send_welcome trigger ############")
+#     bot.send_message(message.chat.id, "سلام! این یک نمونه برای یادگیری ارسال فایل است.")
+
+# @bot.message_handler(commands=['test_voice'])
+# def send_voice(message):
+#     loger.info("################# send_voice trigger ############")
+#     voice_file=open("./test/files/test.mp3","rb")
+#     bot.send_chat_action(message.chat.id,"upload_voice")
+#     bot.send_voice(message.chat.id,voice_file)
+
+# @bot.message_handler(commands=['test_video'])
+# def send_video(message):
+#     loger.info("################# send_video trigger ############")
+#     video_file=open("./test/files/test.mp4","rb")
+#     bot.send_chat_action(message.chat.id,"upload_video")
+#     bot.send_video(message.chat.id,video_file,timeout=20)
+
+# @bot.message_handler(commands=['test_document'])
+# def send_document(message):
+#     loger.info("################# send_document trigger ############")
+#     document_file=open("./test/files/test.pdf","rb")
+#     bot.send_chat_action(message.chat.id,"upload_document")
+#     bot.send_document(message.chat.id,document_file)
+
+# @bot.message_handler(commands=['test_photo'])
+# def send_photo(message):
+#     loger.info("################# send_photo trigger ############")
+#     photo_file=open("./test/files/test.png","rb")
+#     bot.send_chat_action(message.chat.id,"upload_photo")
+#     bot.send_photo(message.chat.id,photo_file)
+# bot.infinity_polling()
+#-------------------end----------------------
+
+#-------------------managing files with id----------------------
 import telebot
 from telebot import types
 from decouple import config
@@ -494,4 +547,7 @@ def send_photo(message):
     photo_file=open("./test/files/test.png","rb")
     bot.send_chat_action(message.chat.id,"upload_photo")
     bot.send_photo(message.chat.id,photo_file)
+
+@bot.
 bot.infinity_polling()
+#-------------------end----------------------
